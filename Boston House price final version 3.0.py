@@ -65,7 +65,8 @@ total_cols=len(df.axes[1])
 print("Number of Rows: "+str(total_rows))
 print("Number of Columns: "+str(total_cols))
 ## Target variable Distribution, Skewness and Kurtosis
-sns.distplot(train['SalePrice']);
+g = sns.distplot(train['SalePrice']);
+g.set_title('SalePrice Distribution')
 #skewness and kurtosis
 print("Skewness: %f" % train['SalePrice'].skew())
 print("Kurtosis: %f" % train['SalePrice'].kurt())
@@ -74,30 +75,15 @@ print("Kurtosis: %f" % train['SalePrice'].kurt())
 sns.pairplot(df)
 plt.figure(figsize=(40,40))
 sns.heatmap(df.corr(), annot = True,fmt='.1g',vmin=-1, vmax=1, center= 0,square=True)
-cat_cols = ['MSZoning', 'Street',' Alley', 'LotShape', 'LandContour', 'Utilities',
-            'LotConfig', 'LandSlope', 'Neighborhood',
-            'Condition1','Condition2','BldgType','HouseStyle','RoofStyle','RoofStyle','Exterior1st',
-            'Exterior2nd','MasVnrType','ExterQual','ExterCond'
-            'Foundation','BsmtQual','BsmtCond','BsmtExposure','BsmtFinType1',
-            'BsmtFinType2', 'Heating','HeatingQC','CentralAir'
-            'Electrical','KitchenQual','Functional','FireplaceQu','GarageType',
-            'GarageFinish','GarageQual','GarageCond','PavedDrive'
-            'PoolQC','Fence','MiscFeature','SaleType','SaleCondition']
 
-sns.catplot(x="Street", y="SalePrice", data=train)
-sns.catplot(x="Alley", y="SalePrice", data=train)
-sns.catplot(x="LotShape", y="SalePrice", data=train)
-sns.catplot(x="LandContour", y="SalePrice", data=train)
-sns.catplot(x="Utilities", y="SalePrice", data=train)
-sns.catplot(x="LotConfig", y="SalePrice", data=train)
-sns.catplot(x="LandSlope", y="SalePrice", data=train)
-sns.catplot(x="Neighborhood", y="SalePrice", data=train)
-sns.catplot(x="Condition1", y="SalePrice", data=train)
-sns.catplot(x="Condition2", y="SalePrice", data=train)
-sns.catplot(x="BldgType", y="SalePrice", data=train)
-sns.catplot(x="Exterior2nd", y="SalePrice", data=train)
-sns.catplot(x="RoofStyle", y="SalePrice", data=train)
-sns.catplot(x="RoofMatl", y="SalePrice", data=train)
+fig, axes =plt.subplots(5,9, figsize=(40,40), sharex=True)
+axes = axes.flatten()
+object_cat = df.dtypes == 'object'
+for ax, catplot in zip(axes, df.dtypes[object_cat].index):
+    sns.countplot(y=catplot, data=df, ax=ax)
+plt.tight_layout()  
+plt.show()
+
 
 
 ############################## Data Preprocessing ##########################################
@@ -116,7 +102,7 @@ plt.title('Percent missing data by feature', fontsize=15)
 missing_data.head()
 train.fillna(train.mean(), inplace=True)
 train.isnull().sum().values.sum()
-train.fillna("000",inplace=True)
+train.fillna("0",inplace=True)
 train.isnull().sum().values.sum()
    
 ## Step 4 Label encoding categorical features
@@ -209,3 +195,4 @@ print(f'Root mean squared error: {rms}')
 ## Step 12d The coefficient of determination: 1 is perfect prediction
 print('Coefficient of determination: %.2f'
       % r2_score(test_Y, train_Y_pred))
+
